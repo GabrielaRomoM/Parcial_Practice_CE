@@ -43,20 +43,45 @@
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+// Variables to setting number of blinks
+volatile uint32_t left_toggles = 0;
+volatile uint32_t right_toggles = 0;
+// Variable to call the function
+volatile uint32_t turn_left = 0;
+volatile uint32_t turn_right = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
+void turn_signal_left(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	//turn left button settings
+	if (GPIO_Pin == B1_Pin) {
+		turn_left = 1;
+		left_toggles = 6; // 3 times blinking (if it's pressed once)
+			}
+	}
 
+void turn_signal_left(void) {
+    static uint32_t left_toggle_tick = 0;
+
+    if (left_toggles > 0 && HAL_GetTick() >= left_toggle_tick) {
+        left_toggle_tick = HAL_GetTick() + 1000;
+        HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+        left_toggles--;
+    } else if (left_toggles == 0 && HAL_GPIO_ReadPin(LED1_GPIO_Port, LED1_Pin) == GPIO_PIN_SET) {
+        HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -99,6 +124,14 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+      if (turn_left == 1) {
+          HAL_UART_Transmit(&huart2, (uint8_t*)"Turn Left Button Pressed\r\n", 28, 35);
+          turn_signal_left();
+          if (left_toggles == 0) {
+              turn_left = 0;
+          }
+      }
   }
   /* USER CODE END 3 */
 }
