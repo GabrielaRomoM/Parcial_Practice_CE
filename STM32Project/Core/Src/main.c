@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "ring_buffer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,28 +49,38 @@ volatile uint32_t right_toggles = 0;
 // Variable to call the function
 volatile uint32_t turn_left = 0;
 volatile uint32_t turn_right = 0;
+
+uint8_t data;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
-void turn_signal_left(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if(huart -> Instance == USART2){
+		//HAL_UART_Transmit(&huart2, &data,1,10);
+		ring_buffer_write(data);
+		HAL_UART_Receive_IT(&huart2, &data,1);
+	}
+
+}
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	//turn left button settings
 	if (GPIO_Pin == B1_Pin) {
 		turn_left = 1;
 		left_toggles = 6; // 3 times blinking (if it's pressed once)
-			}
-	}
-
+	 }
+}
 void turn_signal_left(void) {
     static uint32_t left_toggle_tick = 0;
 
@@ -119,19 +129,23 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  HAL_UART_Receive_IT(&huart2,&data,1);
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
-      if (turn_left == 1) {
+	  uint8_t byte=0;
+	  if (ring_buffer_read(&byte) != 0){ //0x20
+		  HAL_UART_Transmit(&huart2,&byte,1,10);
+	  }
+     if (turn_left == 1) {
           HAL_UART_Transmit(&huart2, (uint8_t*)"Turn Left Button Pressed\r\n", 28, 35);
           turn_signal_left();
           if (left_toggles == 0) {
               turn_left = 0;
-          }
-      }
+         }
+     }
   }
   /* USER CODE END 3 */
 }
@@ -246,11 +260,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : B1A1_Pin */
-  GPIO_InitStruct.Pin = B1A1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pin : PA1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B1A1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED1_Pin LED2_Pin */
   GPIO_InitStruct.Pin = LED1_Pin|LED2_Pin;
@@ -259,11 +273,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : B2_Pin */
-  GPIO_InitStruct.Pin = B2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pin : PB0 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */

@@ -1,6 +1,6 @@
 ################################################################################
 # Automatically-generated file. Do not edit!
-# Toolchain: GNU Tools for STM32 (11.3.rel1)
+# Toolchain: GNU Tools for STM32 (12.3.rel1)
 ################################################################################
 
 -include ../makefile.init
@@ -60,8 +60,8 @@ all: main-build
 main-build: Parcial_Practice_CE.elf secondary-outputs
 
 # Tool invocations
-Parcial_Practice_CE.elf Parcial_Practice_CE.map: $(OBJS) $(USER_OBJS) D:\UNI\7mo\ semestre\Estructuras\ Computacionales\Practice_Parcial_CE\Parcial_Practice_CE\STM32Project\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Parcial_Practice_CE.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\UNI\7mo semestre\Estructuras Computacionales\Practice_Parcial_CE\Parcial_Practice_CE\STM32Project\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Parcial_Practice_CE.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Parcial_Practice_CE.elf Parcial_Practice_CE.map: $(OBJS) $(USER_OBJS) D:\UNI\7mo\ semestre\Estructuras\ Computacionales\Parcial_Practice_CE\STM32Project\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Parcial_Practice_CE.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\UNI\7mo semestre\Estructuras Computacionales\Parcial_Practice_CE\STM32Project\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Parcial_Practice_CE.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
