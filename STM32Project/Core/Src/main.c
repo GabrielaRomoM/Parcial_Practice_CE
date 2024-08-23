@@ -50,7 +50,14 @@ volatile uint32_t right_toggles = 0;
 volatile uint32_t turn_left = 0;
 volatile uint32_t turn_right = 0;
 
+
 uint8_t data;
+#define DOC "1080691539" //Variable of the ID
+#define DOC_LEN 10 //Size of ID
+#define NAME "Gabriela Romo" //Variable of name
+
+char id[DOC_LEN+1]={0};
+uint8_t id_index = 0; //Will contain the content that i write in YAT
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -137,7 +144,16 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  uint8_t byte=0;
 	  if (ring_buffer_read(&byte) != 0){ //0x20
-		  HAL_UART_Transmit(&huart2,&byte,1,10);
+		 // HAL_UART_Transmit(&huart2,&byte,1,10);
+
+		  id[id_index++] = byte;
+//        For print the name after read the ID
+		  if (id_index == DOC_LEN ) {
+		      HAL_UART_Transmit(&huart2, (uint8_t*)NAME, strlen(NAME), 100);
+		      HAL_UART_Transmit(&huart2, (uint8_t*)"\r\n", 2, 100);
+		      // Reset for next input
+		      id_index = 0;
+		  }
 	  }
      if (turn_left == 1) {
           HAL_UART_Transmit(&huart2, (uint8_t*)"Turn Left Button Pressed\r\n", 28, 35);
