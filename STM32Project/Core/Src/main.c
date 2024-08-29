@@ -43,7 +43,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
-
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
@@ -55,22 +54,30 @@ volatile uint32_t right_toggles = 0;
 volatile uint32_t turn_left = 0;
 volatile uint32_t turn_right = 0;
 
-
 uint8_t data;
-#define DOC "1080691539" //Variable of the ID
-#define DOC_LEN 10 //Size of ID
-#define NAME "Gabriela Romo" //Variable of name
+#define CAPACITY_USART1 10
+uint8_t mem_usart1[CAPACITY_USART1];
+ring_buffer_t rb_usart1;
 
-char id[DOC_LEN+1]={0};
-uint8_t id_index = 0; //Will contain the content that i write in YAT
+#define CAPACITY_USART2 10
+uint8_t mem_usart2[CAPACITY_USART2];
+ring_buffer_t rb_usart2;
+
+
+//#define DOC "1080691539" //Variable of the ID
+//#define DOC_LEN 10 //Size of ID
+//#define NAME "Gabriela Romo" //Variable of name
+
+//char id[DOC_LEN+1]={0};
+//uint8_t id_index = 0; //Will contain the content that i write in YAT
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-//static void MX_GPIO_Init(void);
-//static void MX_USART2_UART_Init(void);
-//static void MX_USART1_UART_Init(void);
-//static void MX_I2C1_Init(void);
+static void MX_GPIO_Init(void);
+static void MX_USART2_UART_Init(void);
+static void MX_USART1_UART_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -80,13 +87,13 @@ void SystemClock_Config(void);
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	if(huart -> Instance == USART1){
-		//ring_buffer_write(data);
-		HAL_UART_Receive_IT(&huart1, &data,1);
-	}
+	  if (huart->Instance == USART1) {
+		  ring_buffer_write(&rb_usart1, data);
+		  HAL_UART_Receive_IT(&huart1, &data, 1);
+	  }
 	if(huart -> Instance == USART2){
-		//ring_buffer_write(data);
-		HAL_UART_Receive_IT(&huart2, &data,1);
+		  ring_buffer_write(&rb_usart2, data); // put the data received in buffer
+		  HAL_UART_Receive_IT(&huart2, &data, 1); // enable interrupt to continue receiving
 	}
 
 }
@@ -120,11 +127,14 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
- // MX_GPIO_Init();
- // MX_USART2_UART_Init();
- // MX_USART1_UART_Init();
- // MX_I2C1_Init();
+  MX_GPIO_Init();
+  MX_USART2_UART_Init();
+  MX_USART1_UART_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+  /* Initialize ring buffer (control, memory, and capacity) */
+  ring_buffer_init(&rb_usart1, mem_usart1, CAPACITY_USART1);
+  ring_buffer_init(&rb_usart2, mem_usart2, CAPACITY_USART2);
   ssd1306_Init();
   ssd1306_Fill(Black);
   ssd1306_SetCursor(10,20);
@@ -157,28 +167,29 @@ int main(void)
 		      id_index = 0;
 		  }
 	  }*/
-
-	/* if (ring_buffer_is_full() !=0){
-		 uint8_t my_id[]= "10503821948";
-		 for (uint9_t idx=0; idx < sizeof(my_id); idx++){
-			 if(ring_buffer_read(&byte) != 0){ //0x20
-				 if(byte!= my_id[idx]){
-					 id_incorrect = 1;
-				 }
-			 }
-		  if(id_incorrect != 0){
-			  HAL_UART_Transmit(&huart2,"Gabriela \r\n",10,10);
-			  ssd1306_WriteString("Gabriela Romo",Font_6x8,White);
-			  ssd1306_UpdateScreen();
-		  } else{
-			  HAL_UART_Transmit(&huart2,"Error \r\n", 7,10);
-			  ssd1306_WriteString("Error",Font_6x8,White);
-			  ssd1306_UpdateScreen();
+	  uint8_t byte = 0;
+	  if (ring_buffer_read(&rb_usart2, &byte) != 0) {
+	  if (ring_buffer_is_full(&rb_usart2) != 0) {
+		  uint8_t id_incorrect = 0;
+		  char my_id[] = "1080691539";
+		  for (uint8_t idx = 0; idx < sizeof(my_id); idx++) {
+			  if (ring_buffer_read(&rb_usart2, &byte) != 0) { // 0x20
+				  if (byte != my_id[idx]) {
+					  id_incorrect = 1;
+				  }
+			  }
 		  }
-
-		 } */
-//	 }
-
+		  if (id_incorrect == 0) {
+		      HAL_UART_Transmit(&huart2, (uint8_t *)"Gabriela Romo\r\n", 15, 100);
+		      ssd1306_WriteString("Gabriela Romo", Font_6x8, White);
+		      ssd1306_UpdateScreen();
+		  } else {
+		      HAL_UART_Transmit(&huart2, (uint8_t *)"Error\r\n", 7, 10);
+		      ssd1306_WriteString("Error", Font_6x8, White);
+		      ssd1306_UpdateScreen();
+		  }
+	  }
+	  }
   }
   /* USER CODE END 3 */
 }
