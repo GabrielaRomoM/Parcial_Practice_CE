@@ -180,16 +180,17 @@ int main(void)
 			  }
 		  }
 		  if (id_incorrect == 0) {
-		      HAL_UART_Transmit(&huart2, (uint8_t *)"Gabriela Romo\r\n", 15, 100);
+		      HAL_UART_Transmit(&huart1, (uint8_t *)"Gabriela Romo\r\n", 15, 100);
 		      ssd1306_WriteString("Gabriela Romo", Font_6x8, White);
 		      ssd1306_UpdateScreen();
 		  } else {
-		      HAL_UART_Transmit(&huart2, (uint8_t *)"Error\r\n", 7, 10);
+		      HAL_UART_Transmit(&huart1, (uint8_t *)"Error\r\n", 7, 10);
 		      ssd1306_WriteString("Error", Font_6x8, White);
 		      ssd1306_UpdateScreen();
 		  }
 	  }
 	  }
+
   }
   /* USER CODE END 3 */
 }

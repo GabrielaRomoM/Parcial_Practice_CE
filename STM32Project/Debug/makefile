@@ -35,34 +35,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := Parcial_Practice_CE
+BUILD_ARTIFACT_NAME := Ring_Buffer_CE
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-Parcial_Practice_CE.elf \
+Ring_Buffer_CE.elf \
 
 MAP_FILES += \
-Parcial_Practice_CE.map \
+Ring_Buffer_CE.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-Parcial_Practice_CE.list \
+Ring_Buffer_CE.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: Parcial_Practice_CE.elf secondary-outputs
+main-build: Ring_Buffer_CE.elf secondary-outputs
 
 # Tool invocations
-Parcial_Practice_CE.elf Parcial_Practice_CE.map: $(OBJS) $(USER_OBJS) D:\UNI\7mo\ semestre\Estructuras\ Computacionales\Parcial_Practice_CE\STM32Project\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Parcial_Practice_CE.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\UNI\7mo semestre\Estructuras Computacionales\Parcial_Practice_CE\STM32Project\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Parcial_Practice_CE.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Ring_Buffer_CE.elf Ring_Buffer_CE.map: $(OBJS) $(USER_OBJS) D:\UNI\7mo\ semestre\Estructuras\ Computacionales\Parcial_Practice_CE\STM32Project\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Ring_Buffer_CE.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\UNI\7mo semestre\Estructuras Computacionales\Parcial_Practice_CE\STM32Project\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Ring_Buffer_CE.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -71,14 +71,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Parcial_Practice_CE.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Parcial_Practice_CE.list"
+Ring_Buffer_CE.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Ring_Buffer_CE.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) Parcial_Practice_CE.elf Parcial_Practice_CE.list Parcial_Practice_CE.map default.size.stdout
+	-$(RM) Ring_Buffer_CE.elf Ring_Buffer_CE.list Ring_Buffer_CE.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)

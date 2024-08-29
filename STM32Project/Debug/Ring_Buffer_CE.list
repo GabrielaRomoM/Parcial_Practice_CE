@@ -1,5 +1,5 @@
 
-Parcial_Practice_CE.elf:     file format elf32-littlearm
+Ring_Buffer_CE.elf:     file format elf32-littlearm
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
@@ -557,11 +557,11 @@ int main(void)
  80005fc:	7bfb      	ldrb	r3, [r7, #15]
  80005fe:	2b00      	cmp	r3, #0
  8000600:	d10f      	bne.n	8000622 <main+0xfe>
-		      HAL_UART_Transmit(&huart2, (uint8_t *)"Gabriela Romo\r\n", 15, 100);
+		      HAL_UART_Transmit(&huart1, (uint8_t *)"Gabriela Romo\r\n", 15, 100);
  8000602:	2364      	movs	r3, #100	@ 0x64
  8000604:	220f      	movs	r2, #15
  8000606:	4919      	ldr	r1, [pc, #100]	@ (800066c <main+0x148>)
- 8000608:	4816      	ldr	r0, [pc, #88]	@ (8000664 <main+0x140>)
+ 8000608:	4815      	ldr	r0, [pc, #84]	@ (8000660 <main+0x13c>)
  800060a:	f003 f86f 	bl	80036ec <HAL_UART_Transmit>
 		      ssd1306_WriteString("Gabriela Romo", Font_6x8, White);
  800060e:	4b11      	ldr	r3, [pc, #68]	@ (8000654 <main+0x130>)
@@ -574,11 +574,11 @@ int main(void)
  800061c:	f004 fcbe 	bl	8004f9c <ssd1306_UpdateScreen>
  8000620:	e7b5      	b.n	800058e <main+0x6a>
 		  } else {
-		      HAL_UART_Transmit(&huart2, (uint8_t *)"Error\r\n", 7, 10);
+		      HAL_UART_Transmit(&huart1, (uint8_t *)"Error\r\n", 7, 10);
  8000622:	230a      	movs	r3, #10
  8000624:	2207      	movs	r2, #7
  8000626:	4913      	ldr	r1, [pc, #76]	@ (8000674 <main+0x150>)
- 8000628:	480e      	ldr	r0, [pc, #56]	@ (8000664 <main+0x140>)
+ 8000628:	480d      	ldr	r0, [pc, #52]	@ (8000660 <main+0x13c>)
  800062a:	f003 f85f 	bl	80036ec <HAL_UART_Transmit>
 		      ssd1306_WriteString("Error", Font_6x8, White);
  800062e:	4b09      	ldr	r3, [pc, #36]	@ (8000654 <main+0x130>)
